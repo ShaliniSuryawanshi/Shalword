@@ -1,13 +1,23 @@
 const WORD_LENGTH = 6;
 const MAX_GUESSES = 6;
 
-// Noon-epoch: day index changes at 12:00 PM local time
+// Word resets at 12:01 AM IST (UTC+5:30) every day.
+// Strategy: shift the current UTC time by (IST offset − 1 min) so that
+// the IST calendar date flips exactly at 00:01 IST, then diff against epoch.
 function getDailyWord() {
-  const now = new Date();
-  const noon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
-  if (now < noon) noon.setDate(noon.getDate() - 1);
-  const epoch = new Date(2024, 0, 1, 12, 0, 0); // Jan 1 2024 noon
-  const dayIndex = Math.floor((noon - epoch) / 86400000);
+  const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000; // UTC+5:30
+  const RESET_MS      = 1 * 60 * 1000;              // 1-minute delay past midnight
+
+  const shifted = new Date(Date.now() + IST_OFFSET_MS - RESET_MS);
+  const y = shifted.getUTCFullYear();
+  const m = shifted.getUTCMonth();
+  const d = shifted.getUTCDate();
+
+  // Epoch: 1 Jan 2024 00:01 IST expressed in the same shifted frame = 1 Jan 2024 UTC
+  const epochMs  = Date.UTC(2024, 0, 1);
+  const todayMs  = Date.UTC(y, m, d);
+  const dayIndex = Math.floor((todayMs - epochMs) / 86400000);
+
   return WORDS[((dayIndex % WORDS.length) + WORDS.length) % WORDS.length];
 }
 
