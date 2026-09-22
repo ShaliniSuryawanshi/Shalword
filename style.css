@@ -133,6 +133,10 @@ header .subtitle {
   cursor: pointer;
   text-transform: uppercase;
   transition: background 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .kb-key.wide { min-width: 62px; font-size: 0.75rem; }

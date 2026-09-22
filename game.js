@@ -45,6 +45,7 @@ function buildKeyboard() {
     row.className = "kb-row";
     keys.forEach(k => {
       const btn = document.createElement("button");
+      btn.type = "button";
       btn.textContent = k;
       btn.className = "kb-key";
       if (k === "ENTER" || k === "⌫") btn.classList.add("wide");
