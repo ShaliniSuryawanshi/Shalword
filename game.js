@@ -188,6 +188,26 @@ function showMessage(text, persist = false) {
   if (!persist) setTimeout(() => msg.classList.remove("show"), 1800);
 }
 
+// Fetch the full English word list (~370k words) and add all 6-letter words
+// to VALID_WORDS. Game is fully playable immediately with the embedded list;
+// this runs in the background and silently extends coverage.
+async function loadExtendedWordList() {
+  try {
+    const res = await fetch(
+      "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt"
+    );
+    if (!res.ok) return;
+    const text = await res.text();
+    const SIX = /^[A-Z]{6}$/;
+    for (const line of text.split('\n')) {
+      const w = line.trim().toUpperCase();
+      if (SIX.test(w)) VALID_WORDS.add(w);
+    }
+  } catch {
+    // Network unavailable — embedded list still in effect
+  }
+}
+
 document.addEventListener("keydown", e => {
   const k = e.key.toUpperCase();
   if (k === "BACKSPACE" || k === "ENTER" || /^[A-Z]$/.test(k)) handleKey(k);
@@ -195,3 +215,4 @@ document.addEventListener("keydown", e => {
 
 buildGrid();
 buildKeyboard();
+loadExtendedWordList();
